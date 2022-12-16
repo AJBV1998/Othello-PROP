@@ -50,7 +50,6 @@ public class PlayerMinMax  implements IPlayer, IAuto {
         ArrayList<Point> moves = s.getMoves();     
         int valor = Integer.MIN_VALUE;
         Point millorMoviment = moves.get(0);
-        jugador = s.getCurrentPlayer();//Jugador actual
         System.out.println("_______________________________________");
         System.out.println("########## Jugades possibles ##########");
         
@@ -61,7 +60,7 @@ public class PlayerMinMax  implements IPlayer, IAuto {
                 GameStatus gs_aux = new GameStatus(s);
                 gs_aux.movePiece(moves.get(i));//mueve una pieza
                 if(gs_aux.checkGameOver()) return new Move(millorMoviment, (long) nodesExplorats, depth, SearchType.MINIMAX);                
-                int candidat = miniMax(gs_aux, depth-1,jugador,Integer.MIN_VALUE,Integer.MAX_VALUE,false);                
+                int candidat = miniMax(gs_aux, depth-1,gs_aux.getCurrentPlayer(),Integer.MIN_VALUE,Integer.MAX_VALUE,false);                
                 System.out.println(moves.get(i) + " --> Valor heuristic: " + candidat);
                 if(candidat == Integer.MAX_VALUE) millorMoviment = moves.get(i);
                 if(valor < candidat){                
@@ -80,74 +79,51 @@ public class PlayerMinMax  implements IPlayer, IAuto {
     
     private int miniMax(GameStatus s, int depth, CellType jugador,int alpha, int beta, boolean maximitza) {
         //Caso Base: profundidad maxima o juego acabado
-        
         if(depth == 0 || s.checkGameOver()){
-            
             //return heuristica(s, jugador);
             return (int) Heuristica.evaluador(s);
         }
         ArrayList<Point> moves_minmax = s.getMoves();  
         
         //Maximiza
-        
-        if (maximitza){
-            //¿Jugador actual puede moverse?
-            if(s.currentPlayerCanMove()){            
-                //Recorrido de los posibles movimientos
-                for(int i=0;i<moves_minmax.size();i++){
+        if (maximitza){          
+            //Recorrido de los posibles movimientos
+            for(int i=0;i<moves_minmax.size();i++){
+                nodesExplorats++;
+                GameStatus gs_max = new GameStatus(s); // copia del estado de juego
+                gs_max.movePiece(moves_minmax.get(i)); //Realizamos el movimiento
 
-                    nodesExplorats++;
-                    GameStatus gs_max = new GameStatus(s); // copia del estado de juego
-                    gs_max.movePiece(moves_minmax.get(i)); //Realizamos el movimiento
+                //Se encuentra una solucion posible, no hace falta seguir explorando
+                if(gs_max.checkGameOver()) return Integer.MAX_VALUE;
+                //Exploramos el arbol
 
-                    //Se encuentra una solucion posible, no hace falta seguir explorando
-                    if(gs_max.checkGameOver()) return Integer.MAX_VALUE;
-                    //Exploramos el arbol
-
-                    int valor =  miniMax(gs_max, depth-1, gs_max.getCurrentPlayer(), alpha, beta, false); 
-                    //Nos quedamos con el valor maximo de los hijos
-                    alpha = Math.max(alpha, valor);
-                    //Poda alpha-beta
-                    if (beta <= alpha){ break;  }                
-                }
-                return alpha;
-            
-            }
-            else{
-                s.skipTurn();//saltar turno del jugador actual
-                int valor = miniMax(s, depth, s.getCurrentPlayer(), alpha, beta, true); 
+                int valor =  miniMax(gs_max, depth-1, gs_max.getCurrentPlayer(), alpha, beta, false); 
+                //Nos quedamos con el valor maximo de los hijos
                 alpha = Math.max(alpha, valor);
-                return alpha;
-            }  
+                //Poda alpha-beta
+                if (beta <= alpha){ break;  }                
+            }
+            return alpha;
         } 
         //Minimiza
         else{
-            //¿Jugador actual puede moverse?
-            if(s.currentPlayerCanMove()){     
-                //Recorrido de los posibles movimientos            
-                for(int i=0;i<moves_minmax.size();i++){
+            //Recorrido de los posibles movimientos            
+            for(int i=0;i<moves_minmax.size();i++){
 
-                    nodesExplorats++;
-                    GameStatus gs_mix = new GameStatus(s); // copia del estado de juego
-                    gs_mix.movePiece(moves_minmax.get(i)); //Realizamos el movimiento
+                nodesExplorats++;
+                GameStatus gs_mix = new GameStatus(s); // copia del estado de juego
+                gs_mix.movePiece(moves_minmax.get(i)); //Realizamos el movimiento
 
-                    //Se encuentra una solucion posible, no hace falta seguir explorando
-                    if(gs_mix.checkGameOver()) return Integer.MIN_VALUE;
-                    //Exploramos el arbol
-                    int valor = miniMax(gs_mix, depth-1, gs_mix.getCurrentPlayer(), alpha, beta, true); 
-                    //Nos quedamos con el valor maximo de los hijos
-                    beta = Math.min(beta, valor);
-                    //Poda alpha-beta
-                    if (beta <= alpha){ break;  }                
-                }
-                return beta;
-            }
-            else{
-                s.skipTurn();//saltar turno del jugador actual
-                int valor = miniMax(s, depth, s.getCurrentPlayer(), alpha, beta, false); 
+                //Se encuentra una solucion posible, no hace falta seguir explorando
+                if(gs_mix.checkGameOver()) return Integer.MIN_VALUE;
+                //Exploramos el arbol
+                int valor = miniMax(gs_mix, depth-1, gs_mix.getCurrentPlayer(), alpha, beta, true); 
+                //Nos quedamos con el valor maximo de los hijos
                 beta = Math.min(beta, valor);
-                return beta;
+                //Poda alpha-beta
+                if (beta <= alpha){ break;  }                
             }
+            return beta;
         } 
             
        
@@ -170,7 +146,7 @@ public class PlayerMinMax  implements IPlayer, IAuto {
      */
     @Override
     public String getName() {
-        return "Random(" + name + ")";
+        return name;
     }
     
 }
