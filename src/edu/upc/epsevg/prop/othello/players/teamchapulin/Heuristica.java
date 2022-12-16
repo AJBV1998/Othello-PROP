@@ -7,61 +7,83 @@ package edu.upc.epsevg.prop.othello.players.teamchapulin;
 import edu.upc.epsevg.prop.othello.CellType;
 import static edu.upc.epsevg.prop.othello.CellType.opposite;
 import edu.upc.epsevg.prop.othello.GameStatus;
-import java.awt.Point;
-import java.util.ArrayList;
+
 
 /**
  *
  * @author maic1
  */
 public class Heuristica {
-
-    static int evaluador;
     public static double evaluador(GameStatus s){
-        double resultado;
-        resultado= 64*(3*CoinParity(s)+ Mobility(s)+2*CornerCaptured(s))/600;
-        return resultado;
+        double resultat;
+        resultat = 25*CoinParity(s) + 5*Mobility(s) + 100*CornerCaptured(s); //+ 25*Stability(s);
+        return resultat*Stability(s);
     }
     
 
     // Valor heurístico de paridad de moneda =
-	//100 * (Monedas máximas de jugador - Monedas mínimas de jugador) / (Monedas máximas de jugador + Monedas mínimas de jugador)
+	//100 * (Piezas jugador1 - Piezas jugador2) / (Piezas jugador1 + Piezas jugador2)
     public static double CoinParity(GameStatus s){
         CellType jugador = s.getCurrentPlayer();
-        CellType contrario = opposite(jugador);
-        return 100 * (s.getScore(jugador)-s.getScore(contrario)/s.getScore(jugador)+s.getScore(contrario));
+        CellType adversari = opposite(jugador);
+        return 100 * ( ( s.getScore(jugador) - s.getScore(adversari) ) / ( s.getScore(jugador) + s.getScore(adversari) ) );
     }
     
     private static double Mobility(GameStatus s) {
-        int max_jugador = s.getMoves().size();
+        int jugador_moves = s.getMoves().size();
         s.skipTurn();
-        int min_jugador = s.getMoves().size();
+        int adversari_moves = s.getMoves().size();
         
-        if((max_jugador+min_jugador) != 0  )
-            return 100*(max_jugador - min_jugador)/(max_jugador + min_jugador);
+        if((jugador_moves + adversari_moves) != 0  )
+            return 100 * ( (jugador_moves - adversari_moves) / (jugador_moves + adversari_moves) );
         else
             return 0;
     }
 
     private static double CornerCaptured(GameStatus s) {
-        int maxCorners = 0;
-        int minCorners = 0;
+        int jugador_corners = 0;
+        int adversari_corners = 0;
         
-        if(s.getPos(0,0)==s.getCurrentPlayer()) maxCorners++;
-        else minCorners++;
+        if(s.getPos(0,0)==s.getCurrentPlayer()) jugador_corners++;
+        else{if(s.getPos(0,0)!=CellType.EMPTY)   adversari_corners++;}
         
-        if(s.getPos(0,7)==s.getCurrentPlayer()) maxCorners++;
-        else minCorners++;
+        if(s.getPos(0,7)==s.getCurrentPlayer()) jugador_corners++;
+        else{if(s.getPos(0,7)!=CellType.EMPTY)   adversari_corners++;}
         
-        if(s.getPos(7,0)==s.getCurrentPlayer()) maxCorners++;
-        else minCorners++;
+        if(s.getPos(7,0)==s.getCurrentPlayer()) jugador_corners++;
+        else{if(s.getPos(7,0)!=CellType.EMPTY)   adversari_corners++;}
         
-        if(s.getPos(7,7)==s.getCurrentPlayer()) maxCorners++;
-        else minCorners++;
+        if(s.getPos(7,7)==s.getCurrentPlayer()) jugador_corners++;
+        else{if(s.getPos(7,7)!=CellType.EMPTY)   adversari_corners++;}
         
-        if((maxCorners + minCorners) != 0)
-            return 100 *(maxCorners - minCorners)/(maxCorners + minCorners);
+        if((jugador_corners + adversari_corners) != 0)
+            return 100 * ( (jugador_corners - adversari_corners) / (jugador_corners + adversari_corners) );
         else return 0;
+    }
+    
+    private static int Stability(GameStatus s) {
+        int jugador_stability = 0;
+        int adversari_stability = 0;
+        
+        int[][] stability_board = new int[][]{ //8x8
+                    { 4, -3,  2,  2,  2,  2, -3,  4},
+                    {-3, -4, -1, -1, -1, -1, -4, -3},
+                    { 2, -1,  1,  0,  0,  1, -1,  2},
+                    { 2, -1,  0,  1,  1,  0, -1,  2},
+                    { 2, -1,  0,  1,  1,  0, -1,  2},
+                    { 2, -1,  1,  0,  0,  1, -1,  2},
+                    {-3, -4, -1, -1, -1, -1, -4, -3},
+                    { 4, -3,  2,  2,  2,  2, -3,  4}
+            };
+        
+        for(int i = 0; i < s.getSize(); ++i){
+            for(int j = 0; j < s.getSize(); ++j){
+                if(s.getPos(i,j) == s.getCurrentPlayer()) jugador_stability+=stability_board[i][j];
+                else{ if(s.getPos(i,j)!=CellType.EMPTY) adversari_stability-=stability_board[i][j];}
+            }
+        }
+        
+        return jugador_stability - adversari_stability;
     }
     
 }
