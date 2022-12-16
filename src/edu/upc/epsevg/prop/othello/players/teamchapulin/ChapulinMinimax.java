@@ -166,15 +166,15 @@ public class ChapulinMinimax  implements IPlayer, IAuto {
         ArrayList<Point> moves = s.getMoves();     
         int valor = Integer.MIN_VALUE;
         Point millorMoviment = moves.get(0);
-        jugador = s.getCurrentPlayer();
+        jugador = s.getCurrentPlayer();//Jugador actual
         System.out.println("_______________________________________");
         System.out.println("########## Jugades possibles ##########");
         
-        if(s.currentPlayerCanMove()){
+        if(s.currentPlayerCanMove()){ //¿Jugador actual puede moverse?
             for(int i = 0; i < moves.size(); ++i){
                 nodesExplorats++;
                 GameStatus gs_aux = new GameStatus(s);
-                gs_aux.movePiece(moves.get(i));
+                gs_aux.movePiece(moves.get(i));//mueve una pieza
                 int candidat = miniMax(gs_aux, depth-1,opposite(jugador),false);
                 System.out.println(moves.get(i) + " --> Valor heuristic: " + candidat);
                 if(candidat == Integer.MAX_VALUE) millorMoviment = moves.get(i);
@@ -193,12 +193,13 @@ public class ChapulinMinimax  implements IPlayer, IAuto {
     }
     
     private int miniMax(GameStatus s, int depth, CellType jugador, boolean maximitza) {
+        //Caso Base: profundidad maxima o juego acabado
         if(depth == 0 || s.checkGameOver())  return heuristica(s, jugador);
         else{
             ArrayList<Point> moves = s.getMoves();     
             int valor;
-            if(maximitza)   valor = Integer.MIN_VALUE;
-            else    valor = Integer.MAX_VALUE;
+            if(maximitza) valor = Integer.MIN_VALUE;
+            else valor = Integer.MAX_VALUE;
 
             for(int i = 0; i < moves.size(); ++i){
                 nodesExplorats++;
