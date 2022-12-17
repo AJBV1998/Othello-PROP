@@ -16,8 +16,8 @@ import edu.upc.epsevg.prop.othello.GameStatus;
 public class Heuristica {
     public static double evaluador(GameStatus s){
         double resultat;
-        resultat = 25*CoinParity(s) + 5*Mobility(s) + 100*CornerCaptured(s); //+ 25*Stability(s);
-        return resultat*Stability(s);
+        resultat = 25*CoinParity(s) + 100*CornerCaptured(s); 
+        return resultat * (Stability(s) + 5*Mobility(s));
     }
     
 
