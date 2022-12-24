@@ -143,7 +143,7 @@ public class PlayerMiniMax  implements IPlayer, IAuto {
      * @param key clau hash de l'estat actual del tauler
      * @return Eleccio de la jugada amb maxim valor heuristic.
      */ 
-    private int miniMax(GameStatus gs, int depth, int depth_a, int alpha, int beta, boolean maximitza, long key) {  
+    public int miniMax(GameStatus gs, int depth, int depth_a, int alpha, int beta, boolean maximitza, long key) {  
         //Index de l'estat de la taula despres del moviment
         int estat = (int)(key%TT.length);
         
@@ -257,7 +257,7 @@ public class PlayerMiniMax  implements IPlayer, IAuto {
      * @param gs Tauler i estat actual de joc.
      * @return valor hash del tauler de joc.
      */
-    private long calculateHashTable(GameStatus gs){
+    public long calculateHashTable(GameStatus gs){
         long key = 0;
         for (int i = 0; i < gs.getSize(); ++i) {
             for (int j = 0; j < gs.getSize(); ++j) {
@@ -276,7 +276,7 @@ public class PlayerMiniMax  implements IPlayer, IAuto {
      * 
      * @return vector tridimensional de números aleatoris de 64 bits
      */
-    private long[][][] creaZobristRandom() {
+    public long[][][] creaZobristRandom() {
         Random rand = new Random();
         long[][][] keys = new long[8][8][2];
         for (int i = 0; i < 8; i++) {
@@ -298,7 +298,7 @@ public class PlayerMiniMax  implements IPlayer, IAuto {
      * @param tipus tipus de node 0-> exacte, 1-> poda alpha, 2-> poda beta 
      * @return un nou InfoNode
      */
-    private InfoNode afegir(long key, int valor, byte depth, byte tipus){       
+    public InfoNode afegir(long key, int valor, byte depth, byte tipus){       
         return new InfoNode(key, valor, depth, tipus);                                             
     }
     

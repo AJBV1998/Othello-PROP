@@ -115,7 +115,7 @@ public class Heuristica {
      * @param s Tauler i estat actual de joc.
      * @return Diferència relativa de les esquines conquistades per part dels jugador, el valor retornat serà entre -100 i 100
      */
-    private static int CornerCaptured(GameStatus s) {
+    public static int CornerCaptured(GameStatus s) {
         //Comptabilitzar del jugador
         int j_corners = 0;
         //Comptabilitzar del contrari
@@ -156,7 +156,7 @@ public class Heuristica {
      * @param s Tauler i estat actual de joc.
      * @return Diferència relativa de les esquines conquistades per part dels jugador
      */
-    private static int Mobility(GameStatus s) {
+    public static int Mobility(GameStatus s) {
         //Quantitat de moviments que pot fer el jugador en el estat actual del tauler
         int jugador_moves = s.getMoves().size();
         s.skipTurn();
@@ -179,7 +179,7 @@ public class Heuristica {
      * @param s Tauler i estat actual de joc.     
      * @return Retorna la diferència deprés d'haver calculat el pes de les posicions de cada jugador
      */
-    private static int Stability(GameStatus s) {
+    public static int Stability(GameStatus s) {
         //Variable per guardar el pes de les posicions del jugador
         int stability_jugador = 0;
         //Variable per guardar el pes de les posicions del contrari
